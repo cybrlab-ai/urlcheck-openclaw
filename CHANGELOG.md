@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.3 (2026-02-07)
+
+- Updated release workflow runtime to Node 24 to ensure npm OIDC trusted publishing compatibility.
+- Bumped plugin runtime and manifest versions to `0.1.3`.
+
 ## 0.1.2 (2026-02-07)
 
 - Fixed plugin README documentation links to canonical `urlcheck-mcp` public docs paths.

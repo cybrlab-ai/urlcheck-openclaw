@@ -1,6 +1,6 @@
 {
   "name": "@cybrlab/urlcheck-openclaw",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "URLCheck MCP security scanner plugin for OpenClaw. Analyzes URLs for phishing, malware, and suspicious patterns before agent navigation.",
   "type": "module",
   "main": "index.js",
