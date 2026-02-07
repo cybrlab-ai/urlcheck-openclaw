@@ -10,6 +10,7 @@
 - Updated `openclaw.extensions` entry to point to root `./index.js` and added root shim re-export.
 - Removed undocumented `openclaw.minVersion` from `openclaw.plugin.json`.
 - Improved sync workflow portability via configurable target path in sync script.
+- Added GitHub Actions workflow for npm Trusted Publishing with `--provenance` on version tags.
 
 ## 0.1.0 (2026-02-07)
 
