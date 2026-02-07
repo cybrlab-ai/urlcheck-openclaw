@@ -16,7 +16,7 @@ import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/
 const PLUGIN_ID = "urlcheck-openclaw";
 const ENDPOINT = "https://urlcheck.ai/mcp";
 const CLIENT_NAME = "urlcheck-openclaw-plugin";
-const CLIENT_VERSION = "0.1.1";
+const CLIENT_VERSION = "0.1.2";
 
 export default async function register(api) {
   let client = null;

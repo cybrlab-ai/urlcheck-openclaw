@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2 (2026-02-07)
+
+- Fixed plugin README documentation links to canonical `urlcheck-mcp` public docs paths.
+- Hardened release workflow: `npm publish --provenance` now runs only on `v*` tags.
+- Bumped plugin runtime and manifest versions to `0.1.2`.
+
 ## 0.1.1 (2026-02-07)
 
 - Fixed OpenClaw tool proxy response shape to preserve structured MCP payloads (`content`, `structuredContent`, `_meta`).

@@ -137,7 +137,7 @@ does not modify your OpenClaw configuration.
 
 - [Full API Documentation](https://github.com/cybrlab-ai/urlcheck-mcp/blob/main/docs/API.md)
 - [Authentication Guide](https://github.com/cybrlab-ai/urlcheck-mcp/blob/main/docs/AUTHENTICATION.md)
-- [Manual Setup (without plugin)](https://github.com/cybrlab-ai/urlcheck-mcp/blob/main/docs/OPENCLAW_SETUP.md)
+- [Manual Setup (without plugin)](https://github.com/cybrlab-ai/urlcheck-mcp#openclaw-quick-start-manual-first)
 
 ## Support
 
