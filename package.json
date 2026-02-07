@@ -1,0 +1,46 @@
+{
+  "name": "@cybrlab/urlcheck-openclaw",
+  "version": "0.1.1",
+  "description": "URLCheck MCP security scanner plugin for OpenClaw. Analyzes URLs for phishing, malware, and suspicious patterns before agent navigation.",
+  "type": "module",
+  "main": "index.js",
+  "openclaw": {
+    "extensions": ["./index.js"]
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.25.0"
+  },
+  "devDependencies": {
+    "openclaw": "*"
+  },
+  "files": [
+    "index.js",
+    "src/index.js",
+    "openclaw.plugin.json",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "keywords": [
+    "openclaw",
+    "openclaw-plugin",
+    "mcp",
+    "url-scanner",
+    "security",
+    "phishing-detection",
+    "safe-browsing",
+    "urlcheck"
+  ],
+  "author": "CybrLab.ai <contact@cybrlab.ai>",
+  "license": "Apache-2.0",
+  "homepage": "https://urlcheck.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cybrlab-ai/urlcheck-openclaw.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cybrlab-ai/urlcheck-openclaw/issues"
+  }
+}

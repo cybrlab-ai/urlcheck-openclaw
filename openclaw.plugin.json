@@ -1,0 +1,23 @@
+{
+  "id": "urlcheck-openclaw",
+  "name": "URLCheck Security Scanner",
+  "version": "0.1.1",
+  "description": "MCP-native URL security scanner for safe agentic browsing. Connects to the hosted URLCheck endpoint over Streamable HTTP. No ClawHub skill required.",
+  "author": "CybrLab.ai",
+  "license": "Apache-2.0",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "apiKey": {
+        "type": "string",
+        "description": "URLCheck API key. Optional for hosted trial (up to 100 requests/day). For higher limits, obtain a key at contact@cybrlab.ai."
+      }
+    }
+  },
+  "uiHints": {
+    "apiKey": {
+      "sensitive": true
+    }
+  }
+}
