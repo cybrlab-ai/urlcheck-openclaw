@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.4 (2026-02-08)
+
+- Fixed OpenClaw gateway compatibility: tools are now registered synchronously during `register()` so the gateway exposes them via `/tools/invoke`.
+- Moved MCP client to module scope to persist across OpenClaw `register()` re-invocations.
+- Pre-defined tool schemas (`url_scanner_scan`, `url_scanner_scan_with_intent`) for synchronous registration; MCP connection deferred to `start()`.
+
 ## 0.1.3 (2026-02-07)
 
 - Updated release workflow runtime to Node 24 to ensure npm OIDC trusted publishing compatibility.

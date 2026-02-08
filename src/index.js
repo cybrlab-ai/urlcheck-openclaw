@@ -16,10 +16,57 @@ import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/
 const PLUGIN_ID = "urlcheck-openclaw";
 const ENDPOINT = "https://urlcheck.ai/mcp";
 const CLIENT_NAME = "urlcheck-openclaw-plugin";
-const CLIENT_VERSION = "0.1.3";
+const CLIENT_VERSION = "0.1.4";
 
-export default async function register(api) {
-  let client = null;
+/**
+ * Known tool definitions from the URLCheck MCP server.
+ *
+ * Tools are registered synchronously during register() so the OpenClaw
+ * gateway can expose them immediately via /tools/invoke. The execute()
+ * callbacks forward to the live MCP client connected during start().
+ */
+const TOOL_DEFS = [
+  {
+    name: "url_scanner_scan",
+    description:
+      "Scan a URL for security threats including phishing, malware, and suspicious patterns.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        url: { type: "string", description: "The URL to scan" },
+      },
+      required: ["url"],
+    },
+  },
+  {
+    name: "url_scanner_scan_with_intent",
+    description:
+      "Scan a URL with user intent context for enhanced security analysis.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        url: { type: "string", description: "The URL to scan" },
+        intent: {
+          type: "string",
+          description: "The user intent for visiting this URL",
+        },
+      },
+      required: ["url"],
+    },
+  },
+];
+
+// Module-level client persists across OpenClaw register() re-invocations.
+let client = null;
+
+export default function register(api) {
+  // Register tools synchronously so the gateway picks them up immediately.
+  for (const toolDef of TOOL_DEFS) {
+    registerToolProxy(api, toolDef);
+  }
+  console.log(
+    `[URLCheck] Registered ${TOOL_DEFS.length} tool(s): ${TOOL_DEFS.map((t) => t.name).join(", ")}`,
+  );
 
   api.registerService({
     id: PLUGIN_ID,
@@ -32,7 +79,7 @@ export default async function register(api) {
         console.log(`[URLCheck] Auth: API key configured`);
       } else {
         console.log(
-          `[URLCheck] Auth: trial mode (up to 100 requests/day, no API key)`
+          `[URLCheck] Auth: trial mode (up to 100 requests/day, no API key)`,
         );
       }
 
@@ -45,12 +92,12 @@ export default async function register(api) {
 
       const transport = new StreamableHTTPClientTransport(
         new URL(ENDPOINT),
-        { requestInit: { headers } }
+        { requestInit: { headers } },
       );
 
       client = new Client(
         { name: CLIENT_NAME, version: CLIENT_VERSION },
-        { capabilities: {} }
+        { capabilities: {} },
       );
 
       try {
@@ -59,23 +106,9 @@ export default async function register(api) {
       } catch (err) {
         console.error(`[URLCheck] Connection failed: ${err.message}`);
         console.error(
-          `[URLCheck] Verify endpoint is reachable: curl -s -o /dev/null -w "%{http_code}" ${ENDPOINT}`
+          `[URLCheck] Verify endpoint is reachable: curl -s -o /dev/null -w "%{http_code}" ${ENDPOINT}`,
         );
         client = null;
-        return;
-      }
-
-      // Discover tools from server and register each one
-      try {
-        const { tools } = await client.listTools();
-        for (const tool of tools) {
-          registerToolProxy(api, tool);
-        }
-        console.log(
-          `[URLCheck] Registered ${tools.length} tool(s): ${tools.map((t) => t.name).join(", ")}`
-        );
-      } catch (err) {
-        console.error(`[URLCheck] Tool discovery failed: ${err.message}`);
       }
     },
 
@@ -143,7 +176,9 @@ export default async function register(api) {
             response.structuredContent === undefined &&
             response._meta === undefined
           ) {
-            response.content = [{ type: "text", text: "URLCheck scan completed." }];
+            response.content = [
+              { type: "text", text: "URLCheck scan completed." },
+            ];
           }
 
           return response;

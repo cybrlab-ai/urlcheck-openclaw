@@ -88,12 +88,13 @@ I want to log in to my bank. Scan https://example.com with url_scanner_scan_with
 
 ### Response Fields
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `risk_score` | float (0.0-1.0) | Threat probability |
-| `confidence` | float (0.0-1.0) | Analysis confidence |
-| `agent_access_directive` | string | `ALLOW`, `DENY`, `RETRY_LATER`, or `REQUIRE_CREDENTIALS` |
-| `agent_access_reason` | string | Reason for the directive |
+| Field                    | Type            | Description                                              |
+|--------------------------|-----------------|----------------------------------------------------------|
+| `risk_score`             | float (0.0-1.0) | Threat probability                                       |
+| `confidence`             | float (0.0-1.0) | Analysis confidence                                      |
+| `analysis_complete`      | boolean         | Whether the analysis finished fully                      |
+| `agent_access_directive` | string          | `ALLOW`, `DENY`, `RETRY_LATER`, or `REQUIRE_CREDENTIALS` |
+| `agent_access_reason`    | string          | Reason for the directive                                 |
 
 Use `agent_access_directive` for navigation decisions.
 
@@ -105,23 +106,22 @@ polling is needed — the call blocks until the scan completes or times out.
 
 ## Troubleshooting
 
-| Symptom | Cause | Fix |
-|---------|-------|-----|
-| Plugin not listed | Not installed or Gateway not restarted | Run install command, restart Gateway |
-| `[URLCheck] Connection failed` in logs | Endpoint unreachable | Check network; verify `curl https://urlcheck.ai/mcp` works |
-| Tools not appearing | Connection failed on startup | Check Gateway logs for `[URLCheck]` messages |
-| `401 Unauthorized` | API key required or invalid | Set `apiKey` in config or `URLCHECK_API_KEY` env var |
-| `429 Too Many Requests` | Rate limit exceeded | Reduce frequency or add API key for higher limits |
-| Scan takes too long | Target site is slow or complex | Wait for completion; scans can take up to 90 seconds |
+| Symptom                                | Cause                                  | Fix                                                        |
+|----------------------------------------|----------------------------------------|------------------------------------------------------------|
+| Plugin not listed                      | Not installed or Gateway not restarted | Run install command, restart Gateway                       |
+| `[URLCheck] Connection failed` in logs | Endpoint unreachable                   | Check network; verify `curl https://urlcheck.ai/mcp` works |
+| Tools not appearing                    | Connection failed on startup           | Check Gateway logs for `[URLCheck]` messages               |
+| `401 Unauthorized`                     | API key required or invalid            | Set `apiKey` in config or `URLCHECK_API_KEY` env var       |
+| `429 Too Many Requests`                | Rate limit exceeded                    | Reduce frequency or add API key for higher limits          |
+| Scan takes too long                    | Target site is slow or complex         | Wait for completion; scans can take up to 90 seconds       |
 
 ## How It Works
 
-This plugin is a thin wrapper (~100 lines). It:
+This plugin is a thin wrapper. It:
 
-1. Connects to `https://urlcheck.ai/mcp` using the MCP SDK
-2. Discovers available tools from the server
-3. Registers each tool as a native OpenClaw agent tool
-4. Proxies tool calls to the remote server
+1. Registers pre-defined tool schemas as native OpenClaw agent tools
+2. Connects to `https://urlcheck.ai/mcp` using the MCP SDK
+3. Proxies tool calls to the remote server
 
 No scanner logic runs locally. No files are written to your system. The plugin
 does not modify your OpenClaw configuration.
@@ -131,7 +131,7 @@ does not modify your OpenClaw configuration.
 - **No shell access.** Communication uses typed JSON-RPC over HTTPS.
 - **No local execution.** All analysis runs on the remote URLCheck service.
 - **No config mutation.** The plugin never writes to `~/.openclaw/` files.
-- **Auditable.** Source is ~100 lines of JavaScript. Review it yourself.
+- **Auditable.** Source is a single file of JavaScript. Review it yourself.
 
 ## Links
 
