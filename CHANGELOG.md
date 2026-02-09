@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.8 (2026-02-09)
+
+- Added on-demand MCP reconnect with one bounded retry for transport-level failures during tool execution.
+- Hardened all error return paths to include OpenClaw-compatible `content[]` via `errorResult`, preventing runtime `.filter` crashes on error responses.
+- Kept structured success payload support via `normalizeToolResult` while ensuring compatibility with OpenClaw tool result handling.
+- Added regression checks for both success and error envelope shape compatibility in contract tests.
+
 ## 0.1.7 (2026-02-09)
 
 - Fixed OpenClaw runtime crash (`Cannot read properties of undefined (reading 'filter')`) when MCP server returns structured-only responses without `content[]`.

@@ -12,11 +12,12 @@
 
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
+import { McpError } from "@modelcontextprotocol/sdk/types.js";
 
 const PLUGIN_ID = "urlcheck-openclaw";
 const ENDPOINT = "https://urlcheck.ai/mcp";
 const CLIENT_NAME = "urlcheck-openclaw-plugin";
-const CLIENT_VERSION = "0.1.7";
+const CLIENT_VERSION = "0.1.8";
 
 /**
  * Known tool definitions from the URLCheck MCP server.
@@ -56,8 +57,27 @@ const TOOL_DEFS = [
   },
 ];
 
-// Module-level client persists across OpenClaw register() re-invocations.
+// Module-level state persists across OpenClaw register() re-invocations.
 let client = null;
+let connectionHeaders = null;
+
+/**
+ * Create a fresh MCP client and connect to the URLCheck endpoint.
+ */
+async function connectMcp() {
+  const transport = new StreamableHTTPClientTransport(
+    new URL(ENDPOINT),
+    { requestInit: { headers: { ...connectionHeaders } } },
+  );
+
+  const newClient = new Client(
+    { name: CLIENT_NAME, version: CLIENT_VERSION },
+    { capabilities: {} },
+  );
+
+  await newClient.connect(transport);
+  return newClient;
+}
 
 export default function register(api) {
   // Register tools synchronously so the gateway picks them up immediately.
@@ -83,25 +103,15 @@ export default function register(api) {
         );
       }
 
-      const headers = {
+      connectionHeaders = {
         Accept: "application/json, text/event-stream",
       };
       if (apiKey) {
-        headers["X-API-Key"] = apiKey;
+        connectionHeaders["X-API-Key"] = apiKey;
       }
 
-      const transport = new StreamableHTTPClientTransport(
-        new URL(ENDPOINT),
-        { requestInit: { headers } },
-      );
-
-      client = new Client(
-        { name: CLIENT_NAME, version: CLIENT_VERSION },
-        { capabilities: {} },
-      );
-
       try {
-        await client.connect(transport);
+        client = await connectMcp();
         console.log(`[URLCheck] Connected to ${ENDPOINT}`);
       } catch (err) {
         console.error(`[URLCheck] Connection failed: ${err.message}`);
@@ -122,6 +132,7 @@ export default function register(api) {
         client = null;
         console.log(`[URLCheck] Disconnected`);
       }
+      connectionHeaders = null;
     },
   });
 
@@ -139,28 +150,61 @@ export default function register(api) {
       parameters: toolDef.inputSchema,
 
       async execute(_id, params = {}) {
-        if (!client) {
-          return {
-            isError: true,
-            error:
-              "URLCheck plugin is not connected. Check logs for connection errors.",
-          };
+        if (!client && !connectionHeaders) {
+          return errorResult(
+            "URLCheck plugin has not been started. Check logs for errors.",
+          );
         }
 
-        try {
-          const result = await client.callTool({
-            name: toolDef.name,
-            arguments: params,
-          });
-
-          if (result.isError) {
-            const text = extractErrorText(result.content) || "Unknown error";
-            return { isError: true, error: text };
+        for (let attempt = 0; attempt < 2; attempt++) {
+          // Reconnect if the client is gone (first call after timeout,
+          // or retry after a transport error on attempt 0).
+          if (!client) {
+            try {
+              client = await connectMcp();
+              console.log(`[URLCheck] Reconnected to ${ENDPOINT}`);
+            } catch (err) {
+              return errorResult(
+                `URLCheck reconnect failed: ${err.message}`,
+              );
+            }
           }
 
-          return normalizeToolResult(result);
-        } catch (err) {
-          return { isError: true, error: `URLCheck error: ${err.message}` };
+          try {
+            const result = await client.callTool({
+              name: toolDef.name,
+              arguments: params,
+            });
+
+            if (result.isError) {
+              const text =
+                extractErrorText(result.content) || "Unknown error";
+              return errorResult(text);
+            }
+
+            return normalizeToolResult(result);
+          } catch (err) {
+            // MCP protocol errors (e.g. -32602 invalid params) mean the
+            // connection is healthy — the server responded. Don't reconnect.
+            if (err instanceof McpError) {
+              return errorResult(`URLCheck error: ${err.message}`);
+            }
+
+            // Transport errors on first attempt: reconnect and retry once.
+            if (attempt === 0) {
+              console.warn(
+                `[URLCheck] Call failed (${err.message}), reconnecting…`,
+              );
+              try {
+                await client.close();
+              } catch {
+                // ignore
+              }
+              client = null;
+              continue;
+            }
+            return errorResult(`URLCheck error: ${err.message}`);
+          }
         }
       },
     });
@@ -188,6 +232,20 @@ function extractErrorText(content) {
     .map((item) => (typeof item?.text === "string" ? item.text : ""))
     .filter(Boolean)
     .join("\n");
+}
+
+/**
+ * Build an error result that OpenClaw can safely process.
+ *
+ * OpenClaw runtime calls .filter() on result.content unconditionally,
+ * so every return — including errors — must include a content[] array.
+ */
+export function errorResult(message) {
+  return {
+    isError: true,
+    error: message,
+    content: [{ type: "text", text: message }],
+  };
 }
 
 export function normalizeToolResult(result) {
