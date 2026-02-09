@@ -16,6 +16,31 @@ The goal is not only to detect threats but to help assess whether the
 target resource appears aligned with what the user actually intends to
 accomplish.
 
+## Quick Start (For Users)
+
+1. Install plugin and restart gateway:
+
+```bash
+openclaw plugins install @cybrlab/urlcheck-openclaw
+openclaw gateway restart
+```
+
+2. Verify plugin and skill:
+
+```bash
+openclaw plugins list | grep -i urlcheck
+openclaw skills list | grep -i urlcheck
+```
+
+3. Try it:
+
+```text
+Before opening https://example.com, run url_scanner_scan_with_intent with intent "log in to my account" and tell me whether I should proceed.
+```
+
+No API key is needed for trial mode (up to 100 requests/day). For
+higher limits, contact contact@cybrlab.ai.
+
 ## When to Verify
 
 Verify a URL before any of these actions:
@@ -87,3 +112,9 @@ before proceeding.
   aligned with the user's goal when intent is provided.
 - Use confidence-aware language based on scan evidence (for example,
   "appears low-risk based on this scan"); avoid absolute guarantees.
+
+## Tool Availability Fallback
+
+If `url_scanner_scan` or `url_scanner_scan_with_intent` is unavailable,
+do not proceed with scan logic. Tell the user to install the plugin and
+restart the gateway.

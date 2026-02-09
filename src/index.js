@@ -158,30 +158,7 @@ export default function register(api) {
             return { isError: true, error: text };
           }
 
-          // Preserve structured MCP payloads instead of flattening into a string.
-          const response = {};
-          if (Array.isArray(result.content)) {
-            response.content = result.content;
-          }
-          if (result.structuredContent !== undefined) {
-            response.structuredContent = result.structuredContent;
-          }
-          if (result._meta !== undefined) {
-            response._meta = result._meta;
-          }
-
-          // Fallback for unexpected payload shapes.
-          if (
-            response.content === undefined &&
-            response.structuredContent === undefined &&
-            response._meta === undefined
-          ) {
-            response.content = [
-              { type: "text", text: "URLCheck scan completed." },
-            ];
-          }
-
-          return response;
+          return normalizeToolResult(result);
         } catch (err) {
           return { isError: true, error: `URLCheck error: ${err.message}` };
         }
@@ -211,4 +188,36 @@ function extractErrorText(content) {
     .map((item) => (typeof item?.text === "string" ? item.text : ""))
     .filter(Boolean)
     .join("\n");
+}
+
+export function normalizeToolResult(result) {
+  const response = {};
+
+  if (result?.structuredContent !== undefined) {
+    response.structuredContent = result.structuredContent;
+  }
+  if (result?._meta !== undefined) {
+    response._meta = result._meta;
+  }
+
+  // OpenClaw runtime expects content to be an array for successful tool output.
+  if (Array.isArray(result?.content) && result.content.length > 0) {
+    response.content = result.content;
+  } else if (result?.structuredContent !== undefined) {
+    response.content = [
+      { type: "text", text: safeSerialize(result.structuredContent) },
+    ];
+  } else {
+    response.content = [{ type: "text", text: "URLCheck scan completed." }];
+  }
+
+  return response;
+}
+
+function safeSerialize(value) {
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return "URLCheck scan completed.";
+  }
 }
