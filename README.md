@@ -1,11 +1,13 @@
 # URLCheck OpenClaw Plugin
 
-> MCP-native URL security scanner for safe agentic browsing.
+> Assess target URLs for potential threats and alignment with the user's browsing intent before agent navigation.
 
 **Publisher:** [CybrLab.ai](https://cybrlab.ai) | **Service:** [URLCheck](https://urlcheck.dev)
 
-No ClawHub skill required. This plugin connects your OpenClaw agent to the
-hosted URLCheck MCP endpoint over Streamable HTTP.
+This plugin connects your OpenClaw agent to the hosted URLCheck MCP
+endpoint over Streamable HTTP. A companion skill is included that
+instructs agents to assess target URLs for potential threats and
+alignment with the user's browsing intent before navigation.
 
 ---
 
@@ -71,6 +73,14 @@ You should see `urlcheck-openclaw` listed with two tools:
 
 - `url_scanner_scan` — Analyze a URL for security threats
 - `url_scanner_scan_with_intent` — Analyze a URL with user intent context
+
+The plugin includes a bundled skill that instructs the agent to assess
+target URLs for threats and intent alignment before navigating. You can
+confirm the skill loaded:
+
+```bash
+openclaw skills list | grep urlcheck
+```
 
 ## Usage
 

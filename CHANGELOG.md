@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.5 (2026-02-08)
+
+- Added bundled companion skill (`skills/urlcheck/SKILL.md`) that teaches agents to scan URLs proactively before navigation.
+- Registered skill directory in plugin manifest (`"skills": ["./skills"]`).
+- Updated plugin description to reflect bundled skill.
+
 ## 0.1.4 (2026-02-08)
 
 - Fixed OpenClaw gateway compatibility: tools are now registered synchronously during `register()` so the gateway exposes them via `/tools/invoke`.
@@ -8,16 +14,22 @@
 
 ## 0.1.3 (2026-02-07)
 
+**WARNING:** This release has been deprecated.
+
 - Updated release workflow runtime to Node 24 to ensure npm OIDC trusted publishing compatibility.
 - Bumped plugin runtime and manifest versions to `0.1.3`.
 
 ## 0.1.2 (2026-02-07)
+
+**WARNING:** This release has been deprecated.
 
 - Fixed plugin README documentation links to canonical `urlcheck-mcp` public docs paths.
 - Hardened release workflow: `npm publish --provenance` now runs only on `v*` tags.
 - Bumped plugin runtime and manifest versions to `0.1.2`.
 
 ## 0.1.1 (2026-02-07)
+
+**WARNING:** This release has been deprecated.
 
 - Fixed OpenClaw tool proxy response shape to preserve structured MCP payloads (`content`, `structuredContent`, `_meta`).
 - Updated tool execute handler to OpenClaw-compatible signature and safer default params handling.
@@ -30,6 +42,8 @@
 - Added GitHub Actions workflow for npm Trusted Publishing with `--provenance` on version tags.
 
 ## 0.1.0 (2026-02-07)
+
+**WARNING:** This release has been deprecated.
 
 - Initial release.
 - Connects to hosted URLCheck MCP endpoint (`https://urlcheck.ai/mcp`).

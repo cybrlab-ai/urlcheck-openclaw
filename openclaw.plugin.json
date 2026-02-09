@@ -1,8 +1,9 @@
 {
   "id": "urlcheck-openclaw",
   "name": "URLCheck Security Scanner",
-  "version": "0.1.4",
-  "description": "MCP-native URL security scanner for safe agentic browsing. Connects to the hosted URLCheck endpoint over Streamable HTTP. No ClawHub skill required.",
+  "version": "0.1.5",
+  "description": "Assess target URLs for potential threats and alignment with the user's browsing intent before agent navigation. Connects to the hosted URLCheck endpoint over Streamable HTTP. Includes companion skill.",
+  "skills": ["./skills"],
   "author": "CybrLab.ai",
   "license": "Apache-2.0",
   "configSchema": {
