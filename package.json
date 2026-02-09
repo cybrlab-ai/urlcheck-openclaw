@@ -1,6 +1,6 @@
 {
   "name": "@cybrlab/urlcheck-openclaw",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "URLCheck plugin for OpenClaw. Assess target URLs for potential threats and alignment with the user's browsing intent before agent navigation.",
   "type": "module",
   "main": "index.js",

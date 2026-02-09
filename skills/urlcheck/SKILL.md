@@ -1,6 +1,6 @@
 ---
 name: urlcheck
-description: Assess target URLs for potential threats and alignment with the user's browsing intent before agent navigation.
+description: Companion skill for @cybrlab/urlcheck-openclaw. Requires URLCheck plugin tools to assess URLs for threats and intent alignment before navigation.
 user-invocable: true
 metadata: {"openclaw":{"requires":{"config":["plugins.entries.urlcheck-openclaw.enabled"]}}}
 ---

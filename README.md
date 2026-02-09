@@ -82,6 +82,43 @@ confirm the skill loaded:
 openclaw skills list | grep urlcheck
 ```
 
+If you install `urlcheck` from ClawHub separately, it still requires the
+`@cybrlab/urlcheck-openclaw` plugin because the skill depends on
+`url_scanner_scan` and `url_scanner_scan_with_intent` tools.
+
+## User-Ready Flow
+
+Use this minimal flow for first-time setup:
+
+1. Install plugin:
+
+```bash
+openclaw plugins install @cybrlab/urlcheck-openclaw
+```
+
+2. Restart gateway:
+
+```bash
+openclaw gateway restart
+```
+
+3. Verify plugin and skill are available:
+
+```bash
+openclaw plugins list | grep -i urlcheck
+openclaw skills list | grep -i urlcheck
+openclaw skills check
+```
+
+4. Run a first prompt:
+
+```text
+Before opening https://example.com, run url_scanner_scan_with_intent with intent "log in to my account" and tell me whether I should proceed.
+```
+
+If `urlcheck` was installed from ClawHub, make sure the plugin is installed
+first; the skill depends on URLCheck plugin tools.
+
 ## Usage
 
 Ask your agent to scan a URL before navigating:

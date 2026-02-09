@@ -1,8 +1,15 @@
 # Changelog
 
+## 0.1.6 (2026-02-09)
+
+- Updated skill description to clarify companion dependency on `@cybrlab/urlcheck-openclaw` plugin tools.
+- Updated descriptions across all public artifacts to reflect intent-alignment capability.
+- Added ClawHub dependency note in README: skill requires plugin for tools.
+- Added User-Ready Flow section in README for first-time setup.
+
 ## 0.1.5 (2026-02-08)
 
-- Added bundled companion skill (`skills/urlcheck/SKILL.md`) that teaches agents to scan URLs proactively before navigation.
+- Added bundled companion skill (`skills/urlcheck/SKILL.md`) that assesses target URLs for potential threats and alignment with the user's browsing intent before agent navigation.
 - Registered skill directory in plugin manifest (`"skills": ["./skills"]`).
 - Updated plugin description to reflect bundled skill.
 
