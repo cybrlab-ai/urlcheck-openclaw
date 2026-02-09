@@ -1,7 +1,7 @@
 {
   "id": "urlcheck-openclaw",
   "name": "URLCheck Security Scanner",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Assess target URLs for potential threats and alignment with the user's browsing intent before agent navigation. Connects to the hosted URLCheck endpoint over Streamable HTTP. Includes companion skill.",
   "skills": ["./skills"],
   "author": "CybrLab.ai",

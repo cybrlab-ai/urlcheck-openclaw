@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.7 (2026-02-09)
+
+- Fixed OpenClaw runtime crash (`Cannot read properties of undefined (reading 'filter')`) when MCP server returns structured-only responses without `content[]`.
+- Added `normalizeToolResult` helper that guarantees `content` is always an array on successful tool output.
+- Exported `normalizeToolResult` for testability.
+- Added Tool Availability Fallback and Quick Start sections to bundled skill.
+
 ## 0.1.6 (2026-02-09)
 
 - Updated skill description to clarify companion dependency on `@cybrlab/urlcheck-openclaw` plugin tools.
