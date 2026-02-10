@@ -17,7 +17,8 @@ import { McpError } from "@modelcontextprotocol/sdk/types.js";
 const PLUGIN_ID = "urlcheck-openclaw";
 const ENDPOINT = "https://urlcheck.ai/mcp";
 const CLIENT_NAME = "urlcheck-openclaw-plugin";
-const CLIENT_VERSION = "0.1.8";
+const CLIENT_VERSION = "0.1.9";
+const REQUEST_TIMEOUT_MS = 600_000;
 
 /**
  * Known tool definitions from the URLCheck MCP server.
@@ -74,6 +75,7 @@ async function connectMcp() {
     { name: CLIENT_NAME, version: CLIENT_VERSION },
     { capabilities: {} },
   );
+  newClient.requestTimeoutMs = REQUEST_TIMEOUT_MS;
 
   await newClient.connect(transport);
   return newClient;

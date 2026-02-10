@@ -5,7 +5,7 @@ user-invocable: true
 metadata: {"openclaw":{"requires":{"config":["plugins.entries.urlcheck-openclaw.enabled"]}}}
 ---
 
-# URLCheck — Next-Step URL Assessment
+# URLCheck - Intent-aware URL security verifier for agents
 
 You have access to a URL verification system that checks target web
 resources for security threats and evaluates whether they appear to

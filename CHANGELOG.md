@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.9 (2026-02-10)
+
+- Increased MCP request timeout to 600s to accommodate full scan cycles on slow-resolving URLs.
+- MCP protocol errors (`McpError`) are returned immediately without triggering unnecessary reconnects.
+
 ## 0.1.8 (2026-02-09)
 
 - Added on-demand MCP reconnect with one bounded retry for transport-level failures during tool execution.
