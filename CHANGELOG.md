@@ -1,8 +1,17 @@
 # Changelog
 
+## 0.1.10 (2026-02-10)
+
+- Fixed per-call MCP request timeout: passed explicit `timeout` and `resetTimeoutOnProgress` options to `callTool()` (the previous `requestTimeoutMs` instance property was not read by the SDK).
+- Timeout set to 600s to accommodate full scan cycles on slow-resolving URLs.
+- Added `shouldRetryCallError` helper: retries once on transport errors and MCP timeout (`-32001`), returns immediately on other MCP protocol errors.
+- Exported `shouldRetryCallError` for testability.
+
 ## 0.1.9 (2026-02-10)
 
-- Increased MCP request timeout to 600s to accommodate full scan cycles on slow-resolving URLs.
+**WARNING:** This release has been deprecated.
+
+- Attempted MCP request timeout increase via `requestTimeoutMs` property (ineffective — SDK does not read this property).
 - MCP protocol errors (`McpError`) are returned immediately without triggering unnecessary reconnects.
 
 ## 0.1.8 (2026-02-09)

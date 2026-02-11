@@ -17,8 +17,9 @@ import { McpError } from "@modelcontextprotocol/sdk/types.js";
 const PLUGIN_ID = "urlcheck-openclaw";
 const ENDPOINT = "https://urlcheck.ai/mcp";
 const CLIENT_NAME = "urlcheck-openclaw-plugin";
-const CLIENT_VERSION = "0.1.9";
+const CLIENT_VERSION = "0.1.10";
 const REQUEST_TIMEOUT_MS = 600_000;
+const REQUEST_TIMEOUT_CODE = -32001;
 
 /**
  * Known tool definitions from the URLCheck MCP server.
@@ -176,6 +177,9 @@ export default function register(api) {
             const result = await client.callTool({
               name: toolDef.name,
               arguments: params,
+            }, undefined, {
+              timeout: REQUEST_TIMEOUT_MS,
+              resetTimeoutOnProgress: true,
             });
 
             if (result.isError) {
@@ -186,16 +190,10 @@ export default function register(api) {
 
             return normalizeToolResult(result);
           } catch (err) {
-            // MCP protocol errors (e.g. -32602 invalid params) mean the
-            // connection is healthy — the server responded. Don't reconnect.
-            if (err instanceof McpError) {
-              return errorResult(`URLCheck error: ${err.message}`);
-            }
-
-            // Transport errors on first attempt: reconnect and retry once.
-            if (attempt === 0) {
+            if (shouldRetryCallError(err, attempt)) {
+              const message = err?.message || String(err);
               console.warn(
-                `[URLCheck] Call failed (${err.message}), reconnecting…`,
+                `[URLCheck] Call failed (${message}), reconnecting…`,
               );
               try {
                 await client.close();
@@ -205,9 +203,15 @@ export default function register(api) {
               client = null;
               continue;
             }
-            return errorResult(`URLCheck error: ${err.message}`);
+
+            const message = err?.message || String(err);
+            return errorResult(`URLCheck error: ${message}`);
           }
         }
+
+        return errorResult(
+          "URLCheck error: request failed after retry. Please try again.",
+        );
       },
     });
   }
@@ -272,6 +276,23 @@ export function normalizeToolResult(result) {
   }
 
   return response;
+}
+
+export function shouldRetryCallError(err, attempt) {
+  if (attempt !== 0) {
+    return false;
+  }
+
+  // Retry transport-like failures once.
+  if (!(err instanceof McpError)) {
+    return true;
+  }
+
+  // Retry MCP RequestTimeout once; other MCP protocol errors are final.
+  return (
+    err.code === REQUEST_TIMEOUT_CODE ||
+    /request timed out|timed out/i.test(err.message)
+  );
 }
 
 function safeSerialize(value) {
