@@ -76,6 +76,18 @@ This catches mismatches that threat-only analysis may miss — for
 example, a legitimate site that may not be the one the user intended
 to use for their goal.
 
+**Async workflow tools (non-blocking)**
+- `url_scanner_scan_async` and `url_scanner_scan_with_intent_async`
+  start scans and return a task handle immediately.
+- `url_scanner_tasks_get` checks task status.
+- `url_scanner_tasks_result` returns the completed scan payload.
+- `url_scanner_tasks_list` lists current tasks.
+- `url_scanner_tasks_cancel` cancels a queued or running task.
+
+Use async tools when you need non-blocking execution or explicit task
+lifecycle control. For normal conversational checks, direct tools are
+usually sufficient.
+
 ## How to Act on Results
 
 Every verification returns an `agent_access_directive`. Follow it:
@@ -98,6 +110,12 @@ Every verification returns an `agent_access_directive`. Follow it:
 - `analysis_complete` (true/false): whether the full analysis finished.
   If false, the result is based on partial analysis — note this to the
   user when relevant.
+- `intent_alignment`: alignment signal between user purpose and observed
+  destination behavior/content.
+  - `misaligned`: evidence suggests mismatch with user intent.
+  - `no_mismatch_detected`: no explicit mismatch signal detected.
+  - `inconclusive`: insufficient evidence to verify alignment.
+  - `not_provided`: no intent was provided.
 
 ## Timing
 
@@ -115,6 +133,6 @@ before proceeding.
 
 ## Tool Availability Fallback
 
-If `url_scanner_scan` or `url_scanner_scan_with_intent` is unavailable,
-do not proceed with scan logic. Tell the user to install the plugin and
+If URLCheck tools are unavailable (including async/task variants), do
+not proceed with scan logic. Tell the user to install the plugin and
 restart the gateway.
