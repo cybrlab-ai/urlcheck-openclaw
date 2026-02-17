@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.1.11 (2026-02-17)
+
+- Added hybrid async/task tooling surface for OpenClaw:
+  - `url_scanner_scan_async`
+  - `url_scanner_scan_with_intent_async`
+  - `url_scanner_tasks_get`
+  - `url_scanner_tasks_result`
+  - `url_scanner_tasks_list`
+  - `url_scanner_tasks_cancel`
+- Kept backward-compatible scanner tools (`url_scanner_scan`, `url_scanner_scan_with_intent`) and added optional `task` input for MCP-style task-augmented mode.
+- Aligned scanner field descriptions with MCP public `server.json` wording.
+- Restricted plugin-exposed task request options to `ttl` and aligned `tasks/list` tool schema to documented empty-input usage.
+- Added direct-call timeout recovery: when the server returns `-32603` with `data.taskId`, the plugin polls `tasks/get` and `tasks/result` to recover the scan result instead of returning an error.
+- Updated documentation to reflect server-side wait timeout change from 300 to 100 seconds (hosted default).
+
 ## 0.1.10 (2026-02-10)
 
 - Fixed per-call MCP request timeout: passed explicit `timeout` and `resetTimeoutOnProgress` options to `callTool()` (the previous `requestTimeoutMs` instance property was not read by the SDK).

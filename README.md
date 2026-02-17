@@ -69,10 +69,16 @@ After restarting the Gateway:
 openclaw plugins list
 ```
 
-You should see `urlcheck-openclaw` listed with two tools:
+You should see `urlcheck-openclaw` listed with scanner and task tools:
 
 - `url_scanner_scan` — Analyze a URL for security threats
+- `url_scanner_scan_async` — Analyze a URL asynchronously and return a task handle
 - `url_scanner_scan_with_intent` — Analyze a URL with user intent context
+- `url_scanner_scan_with_intent_async` — Intent-aware async scan with task handle
+- `url_scanner_tasks_get` — Check task status
+- `url_scanner_tasks_result` — Wait for task result
+- `url_scanner_tasks_list` — List tasks
+- `url_scanner_tasks_cancel` — Cancel a task
 
 The plugin includes a bundled skill that instructs the agent to assess
 target URLs for threats and intent alignment before navigating. You can
@@ -133,23 +139,41 @@ For intent-aware scanning (improves detection for login, purchase, download page
 I want to log in to my bank. Scan https://example.com with url_scanner_scan_with_intent and intent "log in to bank account".
 ```
 
+For asynchronous execution:
+
+```text
+Start an async scan for https://example.com using url_scanner_scan_async, then poll with url_scanner_tasks_get until completed and return the result with url_scanner_tasks_result.
+```
+
+`url_scanner_scan` and `url_scanner_scan_with_intent` also support optional MCP-style task mode by adding:
+
+```json
+{
+  "task": {
+    "ttl": 720000
+  }
+}
+```
+
 ### Response Fields
 
-| Field                    | Type            | Description                                              |
-|--------------------------|-----------------|----------------------------------------------------------|
-| `risk_score`             | float (0.0-1.0) | Threat probability                                       |
-| `confidence`             | float (0.0-1.0) | Analysis confidence                                      |
-| `analysis_complete`      | boolean         | Whether the analysis finished fully                      |
-| `agent_access_directive` | string          | `ALLOW`, `DENY`, `RETRY_LATER`, or `REQUIRE_CREDENTIALS` |
-| `agent_access_reason`    | string          | Reason for the directive                                 |
+| Field                    | Type            | Description                                                             |
+|--------------------------|-----------------|-------------------------------------------------------------------------|
+| `risk_score`             | float (0.0-1.0) | Threat probability                                                      |
+| `confidence`             | float (0.0-1.0) | Analysis confidence                                                     |
+| `analysis_complete`      | boolean         | Whether the analysis finished fully                                     |
+| `agent_access_directive` | string          | `ALLOW`, `DENY`, `RETRY_LATER`, or `REQUIRE_CREDENTIALS`                |
+| `agent_access_reason`    | string          | Reason for the directive                                                |
+| `intent_alignment`       | string          | `misaligned`, `no_mismatch_detected`, `inconclusive`, or `not_provided` |
 
 Use `agent_access_directive` for navigation decisions.
 
 ## Scan Timing
 
-URL scans typically take 30-90 seconds. The plugin uses the MCP SDK's direct
-(synchronous) call mode with a server-side timeout of 300 seconds. No manual
-polling is needed — the call blocks until the scan completes or times out.
+URL scans typically take 30-90 seconds.
+
+- **Direct mode (sync):** `url_scanner_scan` / `url_scanner_scan_with_intent` block until completion or timeout.
+- **Task mode (async):** use `*_async` tools (or pass `task` on base tools), then query task status/result via task tools.
 
 ## Troubleshooting
 
@@ -184,7 +208,7 @@ does not modify your OpenClaw configuration.
 
 - [Full API Documentation](https://github.com/cybrlab-ai/urlcheck-mcp/blob/main/docs/API.md)
 - [Authentication Guide](https://github.com/cybrlab-ai/urlcheck-mcp/blob/main/docs/AUTHENTICATION.md)
-- [Manual Setup (without plugin)](https://github.com/cybrlab-ai/urlcheck-mcp#openclaw-quick-start-manual-first)
+- [Manual Setup (without plugin)](https://github.com/cybrlab-ai/urlcheck-mcp/blob/main/docs/OPENCLAW_SETUP.md)
 
 ## Support
 
