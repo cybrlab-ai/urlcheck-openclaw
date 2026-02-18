@@ -21,24 +21,13 @@ Restart your OpenClaw Gateway after installation.
 
 ## Configure
 
-Add to `~/.openclaw/openclaw.json`:
+The installer automatically enables the plugin in `~/.openclaw/openclaw.json`.
+No additional configuration is required for trial mode (up to 100 requests/day).
 
-**Trial (up to 100 requests/day, no API key):**
+**API key (optional, higher limits):**
 
-```json
-{
-  "plugins": {
-    "entries": {
-      "urlcheck-openclaw": {
-        "enabled": true,
-        "config": {}
-      }
-    }
-  }
-}
-```
-
-**Authenticated (higher limits):**
+Set the `URLCHECK_API_KEY` environment variable, or add `apiKey` to the plugin
+config in `~/.openclaw/openclaw.json`:
 
 ```json
 {
@@ -55,11 +44,32 @@ Add to `~/.openclaw/openclaw.json`:
 }
 ```
 
-Or set the `URLCHECK_API_KEY` environment variable instead of putting the key
-in config. The plugin checks the environment variable if no `apiKey` is set in
-config.
-
 To obtain an API key, contact [contact@cybrlab.ai](mailto:contact@cybrlab.ai).
+
+**Restricted tool policy (advanced):**
+
+If you have `tools.allow` set in your config (restricting which tools are
+available), add the plugin tools to `tools.alsoAllow`:
+
+```json
+{
+  "tools": {
+    "alsoAllow": [
+      "url_scanner_scan",
+      "url_scanner_scan_with_intent",
+      "url_scanner_scan_async",
+      "url_scanner_scan_with_intent_async",
+      "url_scanner_tasks_get",
+      "url_scanner_tasks_result",
+      "url_scanner_tasks_list",
+      "url_scanner_tasks_cancel"
+    ]
+  }
+}
+```
+
+If you have not customized `tools.allow`, this step is not needed — all plugin
+tools are available by default.
 
 ## Verify
 
@@ -177,14 +187,14 @@ URL scans typically take 30-90 seconds.
 
 ## Troubleshooting
 
-| Symptom                                | Cause                                  | Fix                                                        |
-|----------------------------------------|----------------------------------------|------------------------------------------------------------|
-| Plugin not listed                      | Not installed or Gateway not restarted | Run install command, restart Gateway                       |
-| `[URLCheck] Connection failed` in logs | Endpoint unreachable                   | Check network; verify `curl https://urlcheck.ai/mcp` works |
-| Tools not appearing                    | Connection failed on startup           | Check Gateway logs for `[URLCheck]` messages               |
-| `401 Unauthorized`                     | API key required or invalid            | Set `apiKey` in config or `URLCHECK_API_KEY` env var       |
-| `429 Too Many Requests`                | Rate limit exceeded                    | Reduce frequency or add API key for higher limits          |
-| Scan takes too long                    | Target site is slow or complex         | Wait for completion; scans can take up to 90 seconds       |
+| Symptom                                | Cause                                  | Fix                                                                                          |
+|----------------------------------------|----------------------------------------|----------------------------------------------------------------------------------------------|
+| Plugin not listed                      | Not installed or Gateway not restarted | Run install command, restart Gateway                                                         |
+| `[URLCheck] Connection failed` in logs | Endpoint unreachable                   | Check network; verify `curl https://urlcheck.ai/mcp` works                                   |
+| Tools not appearing                    | Connection failed or `tools.allow` set | Check Gateway logs for `[URLCheck]`; if `tools.allow` is set, add tools to `tools.alsoAllow` |
+| `401 Unauthorized`                     | API key required or invalid            | Set `apiKey` in config or `URLCHECK_API_KEY` env var                                         |
+| `429 Too Many Requests`                | Rate limit exceeded                    | Reduce frequency or add API key for higher limits                                            |
+| Scan takes too long                    | Target site is slow or complex         | Wait for completion; scans can take up to 90 seconds                                         |
 
 ## How It Works
 
